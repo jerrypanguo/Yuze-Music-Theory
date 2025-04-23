@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="音程识别训练">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../images/favicon.gif">
+    
+    <title>音程识别听力训练</title>
+    
+        <!-- Bootstrap core CSS -->
+    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/base.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+            <script src="../soundfont/acoustic_grand_piano-mp3.js" type="text/javascript"></script>
+            <script src="../inc/shim/Base64.js" type="text/javascript"></script>
+            <script src="../inc/shim/Base64binary.js" type="text/javascript"></script>
+            <script src="../inc/shim/WebAudioAPI.js" type="text/javascript"></script>
+
+            <script src="../js/midi/audioDetect.js" type="text/javascript"></script>
+            <script src="../js/midi/gm.js" type="text/javascript"></script>
+            <script src="../js/midi/loader.js" type="text/javascript"></script>
+            <script src="../js/midi/plugin.audiotag.js" type="text/javascript"></script>
+            <script src="../js/midi/plugin.webaudio.js" type="text/javascript"></script>
+            <script src="../js/midi/plugin.webmidi.js" type="text/javascript"></script>
+
+            <script src="../js/util/dom_request_xhr.js" type="text/javascript"></script>
+            <script src="../js/util/dom_request_script.js" type="text/javascript"></script>
+
+    <script src="../js/jquery-1.11.0.min.js" type="text/javascript"></script>
+    <script src="../js/jQuery.fastClick.js" type="text/javascript"></script>
+    <script src="../js/ear-training/helpers.js" type="text/javascript"></script>
+    <script src="../js/jquery.hotkeys.js" type="text/javascript"></script>
+    <script src="../js/ear-training/midi-permission.js" type="text/javascript"></script>
+    <script src="../js/ear-training/base.js" type="text/javascript"></script>
+    <script src="../bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+    
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-49725761-1', 'tonedear.com');
+      ga('send', 'pageview');
+
+    </script>
+    
+    <style type="text/css">
+      a.down {
+      background: #bbb;
+      border-color:#bbb;
+      }
+      a.down:hover {
+      background: #888;
+      border-color:#888;
+      }
+      .interval-toggle {
+      width:45%;
+      margin-bottom:1px;
+      }
+      a.answer-btn {
+      margin-bottom:2px;
+      }
+    </style>
+    <script src="../js/ear-training/intervals.js" type="text/javascript"></script>
+  </head>
+  <body>
+    
+<!-- Static navbar -->
+    <div class="navbar navbar-default navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">切换导航</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../index.html">音乐听力训练</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="../index.html">首页</a></li>
+            <li class="dropdown">
+              <a href="intervals.html#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">练习内容 <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="intervals.html">音程</a></li>
+                <li><a href="chord-identification.html">和弦</a></li>
+                <li><a href="scale-identification.html">音阶</a></li>
+                <li><a href="chord-progressions.html">和弦进行</a></li>
+                <li><a href="absolute-perfect-pitch-test.html">绝对音高</a></li>
+                <li><a href="functional-solfege-scale-degrees.html">音阶级数</a></li>
+                <li><a href="intervals-in-solfege-context.html">情境中的音程</a></li>
+	            <li><a href="melodic-dictation-practice.html">旋律听写</a></li>
+              </ul>
+            </li>
+            <li><a href="how-to-practice.html">练习方法</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    
+    <div class="container">
+      <div class="row" id="quickstart-row">
+	    <div class="col-md-6 col-md-offset-2">
+	      <div class="form-horizontal" role="form">
+	        <div class="form-group">
+	          <div class="col-md-9 col-md-offset-3">
+	            <h1 style="margin-top:0px;">音程测验</h1>
+	            <p>在此练习中,您将依次听到两个音符.您的目标是识别这两个音符之间的音程.为了获得最佳效果,请每天进行少量练习.</p>
+              </div>
+	          <label for="inputEmail3" class="col-md-3 control-label">音程选择</label>
+	          <div class="col-md-9">
+		        <select id="quickstart-toggles" class="form-control">
+		          <option value="simple" selected >简单(大三度、纯五度、八度)</option>
+		          <option value="diatonic" >自然音阶(大二度、大三度、纯四度、纯五度、大六度、大七度、八度)</option>
+		          <option value="all">全部</option>
+		        </select>
+		        <p class="text-muted">您可以在开始测验后自定义音程.</p>
+	          </div>
+	        </div>
+            
+	        <div class="form-group">
+	          <label for="spinner" class="col-md-3 control-label">题目数量</label>
+	          <div class="col-md-9">
+		        <input type="number" class="form-control" value="0" min="0" id="quickstart-max-questions">
+		        <p class="text-muted">设为0表示无限题目</p>
+	          </div>
+	        </div>
+
+            	        <div class="form-group"><div id="show-advanced" class="col-md-9 col-md-offset-3"><a class="btn btn-default" style="cursor: pointer; cursor: hand;">+ 显示高级选项</a><br><br></div></div>
+	        <script>
+	          $("#show-advanced").click(function() {
+	          $(this).hide();
+	          $("#advanced-options").show();
+	          });
+	        </script>
+	        
+	        <div id="advanced-options" style="display:none;">
+	          <div class="form-group">
+		        <label class="col-md-3 control-label">音程类型</label>
+		        <div class="col-md-9">
+		          <select id="quickstart-interval-type" class="form-control">
+		            <option value="asc" selected>上行</option>
+		            <option value="desc" >下行</option>
+		            <option value="both" >上行和下行</option>
+		            <option value="harm" >和声(同时发声)</option>
+		          </select>
+		        </div>
+	          </div>
+	          
+	          <div class="form-group">
+		        <label class="col-md-3 control-label">速度</label>
+		        <div class="col-md-9">
+		          <select id="quickstart-speed" class="form-control">
+		            <option value="fast" >快速</option>
+		            <option value="medium" selected>中速</option>
+		            <option value="slow" >慢速</option>
+		          </select>
+		        </div>
+	          </div>
+              
+	          <div class="form-group">
+		        <label for="quickstart-listen" class="col-md-3 control-label">在选项中试听音程</label>
+		        <div class="col-md-9">
+		          <input type="checkbox" id="quickstart-listen"> <label for="quickstart-listen" style="display:inline;"><span style="font-weight:normal;" class="text-muted">通过点击选项部分中的"试听"按钮,按需听取任何音程.</span></label>
+		        </div>
+	          </div>
+              
+	          <div class="form-group">
+		        <label for="quickstart-autoproceed" class="col-md-3 control-label">自动继续</label>
+		        <div class="col-md-9">
+		          <input type="checkbox" id="quickstart-autoproceed"> <label for="quickstart-autoproceed" style="display:inline;"><span style="font-weight:normal;" class="text-muted">在识别出正确答案后自动进入下一个音程</span></label>
+		        </div>
+	          </div>
+	          
+	          <div class="form-group">
+		        <label for="quickstart-fixed-root"  class="col-md-3 control-label">固定根音</label>
+		        <div class="col-md-9">
+		          <input type="checkbox" id="quickstart-fixed-root"> <label for="quickstart-fixed-root" style="display:inline;"><span for="quickstart-fixed-root" style="font-weight:normal;" class="text-muted">为每个音程使用相同的起始音.</span></label>
+		        </div>
+	          </div>
+	          
+	          <div class="form-group">
+		        <label for="quickstart-hotkeys" class="col-md-3 control-label">键盘快捷键</label>
+		        <div class="col-md-9">
+		          <input type="checkbox" id="quickstart-hotkeys"> <label for="quickstart-hotkeys" style="display:inline;"><span style="font-weight:normal;" class="text-muted">使用键盘快捷键选择答案.每个选项的快捷键将显示在[方括号]中.</span></label>
+		        </div>
+	          </div>
+	        </div>  
+            
+	        
+	        <div class="form-group">
+	          <div class="col-md-offset-3 col-md-9">
+		        <button type="submit" class="btn btn-default" id="start-quiz">开始测验</button>
+	          </div>
+	        </div>
+	      </div>
+	    </div>
+      </div>
+      <div class="row" style="display:none;" id="quiz-row">
+	    <div class="col-md-6 col-md-offset-2 text-center loader" id="loader">
+	      <br><br><br>
+	    </div>
+	    <div id="quiz" style="display:none;">
+	      <div class="col-md-6 col-md-offset-2 text-center">
+	        <h1>音程测验</h1>
+                        <a id="level-up-info" data-container="body" data-toggle="popover" data-placement="bottom" data-content="当此进度条填满时,难度会自动增加.回答正确时进度增加,回答错误时进度减少." style="cursor:pointer;" class="pull-right"><span class="glyphicon glyphicon-question-sign"></span></a>
+            <div class="progress progress-striped active">
+              <div id="progress-bar" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="101" style="width: 0%">
+              </div>
+            </div>
+            <p id="level-up-text" style="display:none;">您已升级!正在增加难度...</p>	        <p>正确:<span id="correct-reps">0</span> / 总数:<span id="total-reps">0</span></p>
+	        <a class="btn btn-lg btn-primary" id="hear-next" hotkey="space"><span id="hear-next-text">听下一个</span> <span class="hotkey-text" style="display:none;"><sup>[空格键]</sup></span></a>
+	        <a class="btn btn-lg btn-default" id="hear-again" style="display:none;" hotkey="A">再听一次 <span class="hotkey-text" style="display:none;"><sup>[A]</sup></span></a>
+	        <div id="quiz-messages" style="height:12px;margin-top:15px;"></div>
+	        <h1 id="choices-header">选项</h1>
+	        <div id="answer-choices">
+	        </div>
+	        <a id="end-quiz" class="btn btn-default">结束测验</a>
+	      </div>
+	      
+	      <div class="col-md-4">
+	        <h1>选项</h1>
+	        <p>选择您想测试的音程</p>
+	        <select id="interval-type" class="form-control">
+	          <option value="asc" selected>上行</option>
+	          <option value="desc" >下行</option>
+	          <option value="both" >上行和下行</option>
+	          <option value="harm" >和声(同时发声)</option>
+	        </select>
+            
+	        <select id="speed" class="form-control" style="margin-top:4px;">
+	          <option value="fast" selected>快速速度</option>
+	          <option value="medium" >中速</option>
+	          <option value="slow" >慢速</option>
+	        </select>
+            
+	        <br>
+	        <a id="fixed-root-toggle" class="btn btn-primary down">固定根音</a> (始终从相同的音符开始) <br>
+	        <br>
+	        <a class="btn btn-primary interval-toggle all" interval="1" answer="1" hotkey="W">小二度</a> <a class="btn btn-default listen-btn">试听</a> (1个半音) <br>
+	        <a class="btn btn-primary interval-toggle diatonic all" interval="2" answer="2" hotkey="2">大二度</a> <a class="btn btn-default listen-btn">试听</a> (2个半音) <br>
+	        <a class="btn btn-primary down interval-toggle all" interval="3" answer="3" hotkey="E">小三度</a> <a class="btn btn-default listen-btn">试听</a> (3个半音) <br>
+	        <a class="btn btn-primary down interval-toggle simple diatonic all" interval="4" answer="4" hotkey="3">大三度</a> <a class="btn btn-default listen-btn">试听</a> (4个半音) <br>
+	        <a class="btn btn-primary down interval-toggle diatonic all" interval="5" answer="5" hotkey="4">纯四度</a> <a class="btn btn-default listen-btn">试听</a> (5个半音) <br>
+	        <a class="btn btn-primary down interval-toggle all" interval="6" answer="6" hotkey="T">增四度</a> <a class="btn btn-default listen-btn">试听</a> (6个半音) <br>
+	        <a class="btn btn-primary down interval-toggle simple diatonic all" interval="7" answer="7" hotkey="5">纯五度</a> <a class="btn btn-default listen-btn">试听</a> (7个半音) <br>
+	        <a class="btn btn-primary down interval-toggle all" interval="8" answer="8" hotkey="Y">小六度</a> <a class="btn btn-default listen-btn">试听</a> (8个半音) <br>
+	        <a class="btn btn-primary down interval-toggle diatonic all" interval="9" answer="9" hotkey="6">大六度</a> <a class="btn btn-default listen-btn">试听</a> (9个半音) <br>
+	        <a class="btn btn-primary down interval-toggle all" interval="10" answer="10" hotkey="U">小七度</a> <a class="btn btn-default listen-btn">试听</a> (10个半音) <br>
+	        <a class="btn btn-primary down interval-toggle diatonic all" interval="11" answer="11" hotkey="7">大七度</a> <a class="btn btn-default listen-btn">试听</a> (11个半音) <br>
+	        <a class="btn btn-primary down interval-toggle simple diatonic all" interval="12" answer="12" hotkey="8">八度</a> <a class="btn btn-default listen-btn">试听</a> (12个半音) <br>
+	        <a class="btn btn-primary down interval-toggle all" interval="13" answer="13" hotkey="O">小九度</a> <a class="btn btn-default listen-btn">试听</a> (13个半音) <br>
+	        <a class="btn btn-primary down interval-toggle all" interval="14" answer="14" hotkey="9">大九度</a> <a class="btn btn-default listen-btn">试听</a> (14个半音) <br>
+	        <br>
+	      </div>
+	    </div>
+      </div>
+      
+      
+      <div class="row" style="display:none;" id="finished-row">
+	    <div class="col-md-6 col-md-offset-2 text-center">
+	      <h1>完成!</h1>
+	      <p style="font-size:24px;" id="post-quiz-info" style="display:none;">您正确识别了 <span id="finished-correct-reps">0</span> 个音程中的 <span id="finished-total-reps">0</span> 个,或 <span id="finished-percentage">0</span>%</p>
+	      <table class="table">
+	        <thead>
+	          <tr>
+		        <th>音程</th>
+		        <th>听到次数</th>
+		        <th>错误次数</th>
+		        <th>准确率</th>
+	          </tr>
+	        </thead>
+	        <tbody id="stats-table-body">
+	        </tbody>
+	      </table>
+          <p style="text-align:left;">如果您想提高,请将此练习添加到书签并每天进行少量练习.您可以在<a href="how-to-practice.html">这里</a>阅读更多关于如何练习听力训练的建议.</p>
+	      <a class="btn btn-lg btn-primary" id="start-again">重新开始</a>
+	    </div>
+      </div>
+    </div> <!-- /container -->
+    
+  </body>
+</html>
+

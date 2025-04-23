@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../images/favicon.gif">
+    
+    <title>和弦识别听力训练</title>
+    
+        <!-- Bootstrap core CSS -->
+    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/base.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+            <script src="../soundfont/acoustic_grand_piano-mp3.js" type="text/javascript"></script>
+            <script src="../inc/shim/Base64.js" type="text/javascript"></script>
+            <script src="../inc/shim/Base64binary.js" type="text/javascript"></script>
+            <script src="../inc/shim/WebAudioAPI.js" type="text/javascript"></script>
+
+            <script src="../js/midi/audioDetect.js" type="text/javascript"></script>
+            <script src="../js/midi/gm.js" type="text/javascript"></script>
+            <script src="../js/midi/loader.js" type="text/javascript"></script>
+            <script src="../js/midi/plugin.audiotag.js" type="text/javascript"></script>
+            <script src="../js/midi/plugin.webaudio.js" type="text/javascript"></script>
+            <script src="../js/midi/plugin.webmidi.js" type="text/javascript"></script>
+
+            <script src="../js/util/dom_request_xhr.js" type="text/javascript"></script>
+            <script src="../js/util/dom_request_script.js" type="text/javascript"></script>
+
+    <script src="../js/jquery-1.11.0.min.js" type="text/javascript"></script>
+    <script src="../js/jQuery.fastClick.js" type="text/javascript"></script>
+    <script src="../js/ear-training/helpers.js" type="text/javascript"></script>
+    <script src="../js/jquery.hotkeys.js" type="text/javascript"></script>
+    <script src="../js/ear-training/base.js" type="text/javascript"></script>
+    <script src="../bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+    
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-49725761-1', 'tonedear.com');
+      ga('send', 'pageview');
+
+    </script>
+    
+    <style type="text/css">
+      a.down {
+      background: #bbb;
+      border-color:#bbb;
+      }
+      a.down:hover {
+      background: #888;
+      border-color:#888;
+      }
+      .interval-toggle {
+      width:65%;
+      margin-bottom:1px;
+      }
+      a.answer-btn {
+      margin-bottom:2px;
+      }
+    </style>
+    
+    <script src="../js/ear-training/chords.js" type="text/javascript"></script>
+  </head>
+  <body>
+    
+    <!-- Static navbar -->
+    <div class="navbar navbar-default navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">切换导航</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../index.html">音乐听力训练</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="../index.html">首页</a></li>
+            <li class="dropdown">
+              <a href="chord-identification.html#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">练习内容 <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="intervals.html">音程</a></li>
+                <li><a href="chord-identification.html">和弦</a></li>
+                <li><a href="scale-identification.html">音阶</a></li>
+                <li><a href="chord-progressions.html">和弦进行</a></li>
+                <li><a href="absolute-perfect-pitch-test.html">绝对音高</a></li>
+                <li><a href="functional-solfege-scale-degrees.html">音阶级数</a></li>
+                <li><a href="intervals-in-solfege-context.html">情境中的音程</a></li>
+	            <li><a href="melodic-dictation-practice.html">旋律听写</a></li>
+              </ul>
+            </li>
+            <li><a href="how-to-practice.html">练习方法</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    
+    <div class="container">
+      <div class="row" id="quickstart-row">
+	    <div class="col-md-6 col-md-offset-2">
+	      <div class="form-horizontal" role="form">
+	        <div class="form-group">
+	          <div class="col-md-9 col-md-offset-3">
+	            <h1 style="font-size:35px;margin-top:0px;">和弦识别测试</h1>
+	            <p>在这个练习中,您将听到一个和弦.您的目标是识别您所听到的和弦类型.为了获得最佳效果,请每天进行少量练习.</p>
+	          </div>
+              
+	          <label for="inputEmail3" class="col-md-3 control-label">和弦</label>
+	          <div class="col-md-9">
+		        <select id="quickstart-toggles" class="form-control">
+		          <option value="triads" selected>三和弦(大、小、减、增)</option>
+		          <option value="sevenths">基本七和弦(大小七、小小七、减小七等)</option>
+		          <option value="triads-and-sevenths">三和弦和基本七和弦</option>
+		          <option value="triads-and-all-sevenths">三和弦和所有七和弦</option>
+		        </select>
+		        <p class="text-muted">您随时可以在之后添加或删除单个和弦.</p>
+	          </div>
+	        </div>
+            
+	        <div class="form-group">
+	          <label class="col-md-3 control-label">转位</label>
+	          <div class="col-md-9">
+		        <input type="checkbox" num="0" class="quickstart-inversion" id="quickstart-root-position" checked> <label for="quickstart-root-position"><span style="font-weight:normal;" class="text-muted">原位</span></label><br>
+		        <input type="checkbox" num="1" class="quickstart-inversion" id="quickstart-1st-inversion"> <label for="quickstart-1st-inversion"><span style="font-weight:normal;" class="text-muted">第一转位</span></label><br>
+		        <input type="checkbox" num="2" class="quickstart-inversion" id="quickstart-2nd-inversion"> <label for="quickstart-2nd-inversion"><span style="font-weight:normal;" class="text-muted">第二转位</span></label><br>
+		        <input type="checkbox" num="3" class="quickstart-inversion" id="quickstart-3rd-inversion"> <label for="quickstart-3rd-inversion"><span style="font-weight:normal;" class="text-muted">第三转位</span></label>
+	          </div>
+	        </div>
+            
+	        <div class="form-group">
+	          <label for="spinner" class="col-md-3 control-label">题目数量</label>
+	          <div class="col-md-9">
+		        <input type="number" class="form-control" value="0" min="0" id="quickstart-max-questions">
+		        <p class="text-muted">设为0则为无限题目</p>
+	          </div>
+	        </div>
+            
+            	        <div class="form-group"><div id="show-advanced" class="col-md-9 col-md-offset-3"><a class="btn btn-default" style="cursor: pointer; cursor: hand;">+ 显示高级选项</a><br><br></div></div>
+	        <script>
+	          $("#show-advanced").click(function() {
+	          $(this).hide();
+	          $("#advanced-options").show();
+	          });
+	        </script>
+            
+	        <div id="advanced-options" style="display:none;">
+	          <div class="form-group">
+		        <label for="quickstart-autoproceed" class="col-md-3 control-label">自动进行</label>
+		        <div class="col-md-9">
+		          <input type="checkbox" id="quickstart-autoproceed"> <label style="display:inline" for="quickstart-autoproceed"><span style="font-weight:normal;" class="text-muted">在识别正确答案后自动进入下一个和弦</span></label>
+		        </div>
+	          </div>
+	          
+	          <div class="form-group">
+		        <label for="quickstart-fixed-root"  class="col-md-3 control-label">固定根音</label>
+		        <div class="col-md-9">
+		          <input type="checkbox" id="quickstart-fixed-root"> <label style="display:inline" for="quickstart-fixed-root"><span for="quickstart-fixed-root" style="font-weight:normal;" class="text-muted">为每个和弦使用相同的根音.</span></label>
+		        </div>
+	          </div>
+	          
+	          <div class="form-group">
+		        <label for="quickstart-hotkeys" class="col-md-3 control-label">键盘快捷键</label>
+		        <div class="col-md-9">
+		          <input type="checkbox" id="quickstart-hotkeys"> <label style="display:inline" for="quickstart-hotkeys"><span style="font-weight:normal;" class="text-muted">使用键盘快捷键选择答案.每个选项的快捷键将在[方括号]中显示.</span></label>
+		        </div>
+	          </div>
+	        </div>
+            
+	        <div class="form-group">
+	          <div class="col-md-offset-3 col-md-9">
+		        <button type="submit" class="btn btn-default" id="start-quiz">开始测试</button>
+	          </div>
+	        </div>
+	      </div>
+	    </div>
+      </div>
+      
+      <div class="row" style="display:none;" id="quiz-row">
+	    <div class="col-md-6 col-md-offset-2 text-center loader" id="loader">
+	      <br><br><br>
+	    </div>
+	    <div id="quiz" style="display:none;">
+	      <div class="col-md-6 col-md-offset-2 text-center">
+	        <h1>和弦识别测试</h1>
+                        <a id="level-up-info" data-container="body" data-toggle="popover" data-placement="bottom" data-content="当此进度条填满时,难度将自动增加.当您答对问题时,进度会增加,答错时会减少." style="cursor:pointer;" class="pull-right"><span class="glyphicon glyphicon-question-sign"></span></a>
+            <div class="progress progress-striped active">
+              <div id="progress-bar" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="101" style="width: 0%">
+              </div>
+            </div>
+            <p id="level-up-text" style="display:none;">您已升级!正在增加难度...</p>	        <p><span id="correct-reps">0</span> / <span id="total-reps">0</span> 正确</p>
+	        <a class="btn btn-lg btn-primary" id="hear-next" hotkey="space"><span id="hear-next-text">听下一个</span> <span class="hotkey-text" style="display:none;"><sup>[空格键]</sup></span></a>
+	        <a class="btn btn-lg btn-default" id="hear-again" style="display:none;" hotkey="A">再听一次 <span class="hotkey-text" style="display:none;"><sup>[A]</sup></span></a>
+	        <a class="btn btn-lg btn-default" id="hear-individual" style="display:none;" hotkey="D">听单个音符 <span class="hotkey-text" style="display:none;"><sup>[D]</sup></span></a>
+	        <div id="quiz-messages" style="height:12px;margin-top:15px;"></div>
+	        <h1 id="choices-header">选项</h1>
+	        <div id="answer-choices">
+	          <div id="chord-choices">
+	          </div>
+	          <br>
+	          <div id="inversion-choices" style="display:none;">
+		        <strong>转位</strong>
+	          </div>
+	        </div>
+	        <a id="end-quiz" class="btn btn-default">结束测试</a>
+	      </div>
+	      
+	      <div class="col-md-4">
+	        <h1>和弦</h1>
+	        <p>选择您想要测试的和弦</p>
+	        <br>
+	        <a id="fixed-root-toggle" class="btn btn-primary down">固定根音</a> (始终使用相同根音) <br>
+	        <br>
+	        <a class="btn btn-primary interval-toggle triads triads-and-sevenths triads-and-all-sevenths" chord="maj" answer="maj" hotkey="1">大三和弦</a> <br>
+	        <a class="btn btn-primary interval-toggle triads triads-and-sevenths triads-and-all-sevenths" chord="min" answer="min" hotkey="2">小三和弦</a> <br>
+	        <a class="btn btn-primary down interval-toggle triads triads-and-sevenths triads-and-all-sevenths" chord="aug" answer="aug" hotkey="3">增三和弦</a> <br>
+	        <a class="btn btn-primary down interval-toggle triads triads-and-sevenths triads-and-all-sevenths" chord="dim" answer="dim" hotkey="4">减三和弦</a> <br>
+	        <a class="btn btn-primary down interval-toggle" chord="sus2" answer="sus2" hotkey="5">挂二和弦</a> <br>
+	        <a class="btn btn-primary down interval-toggle" chord="sus4" answer="sus4" hotkey="6">挂四和弦</a> <br>
+	        <a class="btn btn-primary down interval-toggle triads-and-sevenths sevenths triads-and-all-sevenths" chord="dom7" answer="dom7" hotkey="7">大小七和弦</a> <br>
+	        <a class="btn btn-primary down interval-toggle triads-and-sevenths sevenths triads-and-all-sevenths" chord="maj7" answer="maj7" hotkey="8">大七和弦</a> <br>
+	        <a class="btn btn-primary down interval-toggle triads-and-sevenths sevenths triads-and-all-sevenths" chord="min7" answer="min7" hotkey="9">小小七和弦</a> <br>
+	        <a class="btn btn-primary down interval-toggle triads-and-all-sevenths" chord="minmaj7" answer="minmaj7" hotkey="0">小大七和弦</a> <br>
+	        <a class="btn btn-primary down interval-toggle triads-and-all-sevenths" chord="dim7" answer="dim7" hotkey="Q">减减七和弦</a> <br>
+	        <a class="btn btn-primary down interval-toggle triads-and-all-sevenths" chord="dimmaj7" answer="dimmaj7" hotkey="W">减大七和弦</a> <br>
+	        <a class="btn btn-primary down interval-toggle triads-and-all-sevenths" chord="halfdim7" answer="halfdim7" hotkey="E">减小七和弦</a> <br>
+	        <a class="btn btn-primary down interval-toggle triads-and-all-sevenths" chord="aug7" answer="aug7" hotkey="R">增七和弦</a> <br>
+	        <a class="btn btn-primary down interval-toggle triads-and-all-sevenths" chord="augmaj7" answer="augmaj7" hotkey="T">增大七和弦</a> <br>
+	        <a class="btn btn-primary down interval-toggle" chord="maj6" answer="maj6" hotkey="Y">大六和弦</a> <br>
+	        <a class="btn btn-primary down interval-toggle" chord="min6" answer="min6" hotkey="U">小六和弦</a> <br>
+	        <br>
+	        <input type="checkbox" class="inversion" num="0" hotkey="Z" id="root-position" name="Root position" checked> <label for="root-position"><span style="font-weight:normal;" class="text-muted">原位</span></label><br>
+	        <input type="checkbox" class="inversion" num="1" hotkey="X" id="1st-inversion" name="1st inversion"> <label for="1st-inversion"><span style="font-weight:normal;" class="text-muted">第一转位</span></label><br>
+	        <input type="checkbox" class="inversion" num="2" hotkey="C" id="2nd-inversion" name="2nd inversion"> <label for="2nd-inversion"><span style="font-weight:normal;" class="text-muted">第二转位</span></label><br>
+	        <input type="checkbox" class="inversion" num="3" hotkey="V" id="3rd-inversion" name="3rd inversion"> <label for="3rd-inversion"><span style="font-weight:normal;" class="text-muted">第三转位</span></label>
+	      </div>
+	    </div>
+      </div>
+      <div class="row" style="display:none;" id="finished-row">
+	    <div class="col-md-6 col-md-offset-2 text-center">
+	      <h1>完成!</h1>
+	      <p style="font-size:24px;" id="post-quiz-info" style="display:none;">您正确识别了 <span id="finished-correct-reps">0</span> / <span id="finished-total-reps">0</span>,正确率 <span id="finished-percentage">0</span>%</p>
+	      <table class="table">
+	        <thead>
+	          <tr>
+		        <th>和弦</th>
+		        <th>听到次数</th>
+		        <th>错误次数</th>
+		        <th>准确率</th>
+	          </tr>
+	        </thead>
+	        <tbody id="stats-table-body">
+	        </tbody>
+	      </table>
+          <p style="text-align:left;">如果您想提高,请将此练习添加到书签并每天进行少量练习.您可以在<a href="how-to-practice.html">这里</a>阅读有关如何练习听力训练的更多建议.</p>
+	      <a class="btn btn-lg btn-primary" id="start-again">重新开始</a>
+	    </div>
+      </div>
+    </div> <!-- /container -->
+    
+  </body>
+</html>

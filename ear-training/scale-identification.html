@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="音阶识别听力训练">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../images/favicon.gif">
+    
+    <title>音阶识别听力训练</title>
+    
+    <!-- Bootstrap core CSS -->
+    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/base.css" rel="stylesheet">
+    
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <script src="../soundfont/acoustic_grand_piano-mp3.js" type="text/javascript"></script>
+    <script src="../inc/shim/Base64.js" type="text/javascript"></script>
+    <script src="../inc/shim/Base64binary.js" type="text/javascript"></script>
+    <script src="../inc/shim/WebAudioAPI.js" type="text/javascript"></script>
+    
+    <script src="../js/midi/audioDetect.js" type="text/javascript"></script>
+    <script src="../js/midi/gm.js" type="text/javascript"></script>
+    <script src="../js/midi/loader.js" type="text/javascript"></script>
+    <script src="../js/midi/plugin.audiotag.js" type="text/javascript"></script>
+    <script src="../js/midi/plugin.webaudio.js" type="text/javascript"></script>
+    <script src="../js/midi/plugin.webmidi.js" type="text/javascript"></script>
+    
+    <script src="../js/util/dom_request_xhr.js" type="text/javascript"></script>
+    <script src="../js/util/dom_request_script.js" type="text/javascript"></script>
+    
+    <script src="../js/jquery-1.11.0.min.js" type="text/javascript"></script>
+    <script src="../js/jQuery.fastClick.js" type="text/javascript"></script>
+    <script src="../js/ear-training/helpers.js" type="text/javascript"></script>
+    <script src="../js/jquery.hotkeys.js" type="text/javascript"></script>
+    <script src="../js/ear-training/midi-permission.js" type="text/javascript"></script>
+    <script src="../js/ear-training/base.js" type="text/javascript"></script>
+    <script src="../bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+    
+    <style type="text/css">
+      a.down {
+      background: #bbb;
+      border-color:#bbb;
+      }
+      a.down:hover {
+      background: #888;
+      border-color:#888;
+      }
+      .interval-toggle {
+      width:80px;
+      margin-bottom:1px;
+      }
+      a.answer-btn {
+      width:100px;
+      margin-bottom:2px;
+      }
+    </style>
+    <script src="../js/ear-training/scale.js" type="text/javascript"></script>
+  </head>
+  <body>
+    
+    <!-- Static navbar -->
+    <div class="navbar navbar-default navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">切换导航</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="../index.html">音乐听力训练</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="../index.html">首页</a></li>
+            <li class="dropdown">
+              <a href="scale-identification.html#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">练习内容 <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="intervals.html">音程</a></li>
+                <li><a href="chord-identification.html">和弦</a></li>
+                <li><a href="scale-identification.html">音阶</a></li>
+                <li><a href="chord-progressions.html">和弦进行</a></li>
+                <li><a href="absolute-perfect-pitch-test.html">绝对音高</a></li>
+                <li><a href="functional-solfege-scale-degrees.html">音阶级数</a></li>
+                <li><a href="intervals-in-solfege-context.html">情境中的音程</a></li>
+                <li><a href="melodic-dictation-practice.html">旋律听写</a></li>
+              </ul>
+            </li>
+            <li><a href="how-to-practice.html">练习方法</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    
+    <div class="container">
+      <div class="row" id="quickstart-row">
+        <div class="col-md-6 col-md-offset-2">
+          <div class="form-horizontal" role="form">
+            <div class="form-group">
+              <div class="col-md-9 col-md-offset-3">
+                <h1 style="margin-top:0px;">音阶识别测试</h1>
+                <p>在此练习中，您将听到一个音阶。您的目标是识别您所听到的音阶。为了获得最佳效果，请每天进行少量练习。</p>
+              </div>
+              
+              <label for="inputEmail3" class="col-md-3 control-label">音阶</label>
+              <div class="col-md-9">
+                <select id="quickstart-toggles" class="form-control">
+                  <option value="simple" selected>简单（大调、和声小调、旋律小调、自然小调）</option>
+                  <option value="all">全部</option>
+                </select>
+                <p class="text-muted">您可以在开始测试后自定义音阶。</p>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="spinner" class="col-md-3 control-label">题目数量</label>
+              <div class="col-md-9">
+                <input type="number" class="form-control" value="0" min="0" id="quickstart-max-questions">
+                <p class="text-muted">设为0则为无限题目</p>
+              </div>
+            </div>
+            
+            <div class="form-group"><div id="show-advanced" class="col-md-9 col-md-offset-3"><a class="btn btn-default" style="cursor: pointer; cursor: hand;">+ 显示高级选项</a><br><br></div></div>
+            <script>
+              $("#show-advanced").click(function() {
+              $(this).hide();
+              $("#advanced-options").show();
+              });
+            </script>
+            
+            <div id="advanced-options" style="display:none;">
+              <div class="form-group">
+                <label class="col-md-3 control-label">播放方式</label>
+                <div class="col-md-9">
+                  <select id="quickstart-scale-mode" class="form-control">
+                    <option value="ascending" selected>上行</option>
+                    <option value="descending">下行</option>
+                    <option value="both">上行和下行</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label class="col-md-3 control-label">速度</label>
+                <div class="col-md-9">
+                  <select id="quickstart-speed" class="form-control">
+                    <option value="fast">快速</option>
+                    <option value="medium" selected>中速</option>
+                    <option value="slow">慢速</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="quickstart-autoproceed" class="col-md-3 control-label">自动进行</label>
+                <div class="col-md-9">
+                  <input type="checkbox" id="quickstart-autoproceed"> <label for="quickstart-autoproceed" style="display:inline;"><span style="font-weight:normal;" class="text-muted">在识别正确答案后自动进入下一个音阶</span></label>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="quickstart-fixed-root"  class="col-md-3 control-label">固定调性</label>
+                <div class="col-md-9">
+                  <input type="checkbox" id="quickstart-fixed-root"> <label for="quickstart-fixed-root" style="display:inline;"><span for="quickstart-fixed-root" style="font-weight:normal;" class="text-muted">为每个音阶使用相同的调性。</span></label>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="quickstart-hotkeys" class="col-md-3 control-label">键盘快捷键</label>
+                <div class="col-md-9">
+                  <input type="checkbox" id="quickstart-hotkeys"> <label for="quickstart-hotkeys" style="display:inline;"><span style="font-weight:normal;" class="text-muted">使用键盘快捷键选择答案。每个选项的快捷键将在[方括号]中显示。</span></label>
+                </div>
+              </div>
+              
+            </div>
+            
+            <div class="form-group">
+              <div class="col-md-offset-3 col-md-9">
+                <button type="submit" class="btn btn-default" id="start-quiz">开始测试</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="row" style="display:none;" id="quiz-row">
+        <div class="col-md-6 col-md-offset-2 text-center loader" id="loader">
+          <br><br><br>
+        </div>
+        <div id="quiz" style="display:none;">
+          <div class="col-md-7 col-md-offset-1 text-center">
+            <h1>音阶识别测试</h1>
+            <a id="level-up-info" data-container="body" data-toggle="popover" data-placement="bottom" data-content="当此进度条填满时，难度将自动增加。当您答对问题时，进度会增加，答错时会减少。" style="cursor:pointer;" class="pull-right"><span class="glyphicon glyphicon-question-sign"></span></a>
+            <div class="progress progress-striped active">
+              <div id="progress-bar" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="101" style="width: 0%">
+              </div>
+            </div>
+            <p id="level-up-text" style="display:none;">您已升级！正在增加难度...</p>
+            <p><span id="correct-reps">0</span> / <span id="total-reps">0</span> 正确</p>
+            <a class="btn btn-lg btn-primary" id="hear-next" hotkey="space"><span id="hear-next-text">听下一个</span> <span class="hotkey-text" style="display:none;"><sup>[空格键]</sup></span></a>
+            <a class="btn btn-lg btn-default" id="hear-again" style="display:none;" hotkey="A">再听一次 <span class="hotkey-text" style="display:none;"><sup>[A]</sup></span></a>
+            <h1 id="choices-header">选项</h1>
+            <div id="answer-choices" class="text-left">
+            </div>
+            <a id="end-quiz" class="btn btn-default">结束测试</a>
+          </div>
+          
+          <div class="col-md-4">
+            <h1>说明</h1>
+            <p>在此练习中，您将听到一个音阶。您的目标是识别您所听到的音阶。</p>
+            <h1>选项</h1>
+            <p>选择您希望测试的音阶</p>
+            <a id="fixed-root-toggle" class="btn btn-primary down">固定调性</a> (始终使用相同调性) <br>
+            <a id="scale-mode-toggle" class="btn btn-primary">上行</a> <br>
+            <a id="all-answers-toggle" class="btn btn-primary">所有可能的答案</a> <span id="all-answers-value" class="text-muted"></span> <br>
+            <br>
+            <h4>音阶</h4>
+            <a class="btn btn-primary interval-toggle simple all" scale="Ionian" answer="大调（Ionian）" hotkey="1">大调</a>
+            <a class="btn btn-primary interval-toggle simple all" scale="Natural Minor" answer="自然小调" hotkey="2">自然小调</a>
+            <a class="btn btn-primary interval-toggle simple all" scale="Harmonic Minor" answer="和声小调" hotkey="3">和声小调</a> <br>
+            <a class="btn btn-primary interval-toggle simple all" scale="Melodic Minor" answer="旋律小调" hotkey="4">旋律小调</a>
+            <a class="btn btn-primary interval-toggle all" scale="Dorian" answer="多利安" hotkey="5">多利安</a>
+            <a class="btn btn-primary interval-toggle all" scale="Phrygian" answer="弗里几安" hotkey="6">弗里几安</a> <br>
+            <a class="btn btn-primary interval-toggle all" scale="Lydian" answer="利底安" hotkey="7">利底安</a>
+            <a class="btn btn-primary interval-toggle all" scale="Mixolydian" answer="混合利底安" hotkey="8">混合利底安</a>
+            <a class="btn btn-primary interval-toggle all" scale="Locrian" answer="洛克里安" hotkey="9">洛克里安</a> <br>
+            <a class="btn btn-primary interval-toggle all" scale="Whole Tone" answer="全音阶" hotkey="W">全音阶</a>
+            <a class="btn btn-primary interval-toggle all" scale="Major Pentatonic" answer="大调五声音阶" hotkey="Q">大调五声</a>
+            <a class="btn btn-primary interval-toggle all" scale="Minor Pentatonic" answer="小调五声音阶" hotkey="E">小调五声</a> <br>
+            <a class="btn btn-primary interval-toggle all" scale="Blues" answer="蓝调音阶" hotkey="R">蓝调</a>
+            <a class="btn btn-primary interval-toggle all" scale="Chromatic" answer="半音阶" hotkey="T">半音阶</a> <br>
+            <br>
+            <select id="speed" class="form-control" style="margin-bottom:9px;">
+              <option value="fast">快速</option>
+              <option value="medium" selected>中速</option>
+              <option value="slow">慢速</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <div class="row" style="display:none;" id="finished-row">
+        <div class="col-md-6 col-md-offset-2 text-center">
+          <h1>完成！</h1>
+          <p style="font-size:24px;" id="post-quiz-info" style="display:none;">您正确识别了 <span id="finished-correct-reps">0</span> / <span id="finished-total-reps">0</span>，正确率 <span id="finished-percentage">0</span>%</p>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>音阶</th>
+                <th>听到次数</th>
+                <th>错误次数</th>
+                <th>准确率</th>
+              </tr>
+            </thead>
+            <tbody id="stats-table-body">
+            </tbody>
+          </table>
+          <p style="text-align:left;">如果您想提高，请将此练习添加到书签并每天进行少量练习。您可以在<a href="how-to-practice.html">这里</a>阅读有关如何练习听力训练的更多建议。</p>
+          <a class="btn btn-lg btn-primary" id="start-again">重新开始</a>
+        </div>
+      </div>
+      
+      <div class="row" style="margin-top:10px;">
+        <div class="col-md-6 col-md-offset-2">
+          
+        </div>
+      </div>
+    </div> <!-- /container -->
+    
+  </body>
+</html>
